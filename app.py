@@ -18,7 +18,7 @@ def play_urgent_alert_sound():
     components.html('<audio autoplay><source src="https://assets.mixkit.co/active_storage/sfx/2868/2868-84.wav" type="audio/wav"></audio>', height=0, width=0)
 
 # 🔑 YOUR GEMINI API KEY
-GEMINI_API_KEY = "AIzaSyBNG4cgf3v8qaxio2XLSlJ7_lHQ0fMhE80"
+GEMINI_API_KEY = "AIzaSyDmrHoPXjfyIjt4gmMnYj4TIrn3KQ3GWOo"
 
 # 🧠 ANTI-FAKEOUT SCALPING PROMPT
 def ask_gemini_ai(pair, price, change, high, low, timeframe):
