@@ -143,7 +143,7 @@ if not raw_data.empty:
     # Trigger Audio Alert Notification
     play_signal_sound()
 
-    # Premium UI Box Rendering
+    # Premium UI Box Rendering - fixed with unsafe_allow_html=True
     st.markdown(f"""
     <div style="background-color:#111520; padding:20px; border-radius:10px; border-left: 8px solid {signal_color}; margin-bottom: 20px;">
         <h2 style="color:{signal_color}; margin-top:0px;">🎯 Current Signal: {signal_title}</h2>
@@ -162,4 +162,5 @@ if not raw_data.empty:
             </tr>
         </table>
     </div>
-    """, unsafe_with_html=True)
+    """, unsafe_allow_html=True)
+    
