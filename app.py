@@ -23,7 +23,6 @@ GEMINI_API_KEY = "AIzaSyBNG4cgf3v8qaxio2XLSlJ7_lHQ0fMhE80"
 
 def ask_gemini_ai(pair, price, change, timeframe):
     try:
-        # Google Gemini Live API Endpoint
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
         headers = {"Content-Type": "application/json"}
         
@@ -128,6 +127,16 @@ if not raw_data.empty:
         tp = price - (atr_factor * 1.3)
         sl = price + (atr_factor * 0.7)
 
+    # Clean formatting fixed here to prevent ValueError
+    if price < 1:
+        txt_price = f"${price:,.4f}"
+        txt_tp = f"${tp:,.4f}"
+        txt_sl = f"${sl:,.4f}"
+    else:
+        txt_price = f"${price:,.2f}"
+        txt_tp = f"${tp:,.2f}"
+        txt_sl = f"${sl:,.2f}"
+
     # Fetch Real-time Analysis from Google Gemini AI
     ai_msg = ask_gemini_ai(selected_asset, price, change, selected_tf)
     
@@ -147,11 +156,10 @@ if not raw_data.empty:
                 <th>🛑 Stop Loss Protection (SL)</th>
             </tr>
             <tr>
-                <td style="font-size:20px; font-weight:bold; color:#0cf251;">${price:,.4f if price < 1 else :,.2f}</td>
-                <td style="font-size:20px; font-weight:bold; color:#00bfff;">${tp:,.4f if tp < 1 else :,.2f}</td>
-                <td style="font-size:20px; font-weight:bold; color:#ff3344;">${sl:,.4f if sl < 1 else :,.2f}</td>
+                <td style="font-size:20px; font-weight:bold; color:#0cf251;">{txt_price}</td>
+                <td style="font-size:20px; font-weight:bold; color:#00bfff;">{txt_tp}</td>
+                <td style="font-size:20px; font-weight:bold; color:#ff3344;">{txt_sl}</td>
             </tr>
         </table>
     </div>
     """, unsafe_with_html=True)
-            
