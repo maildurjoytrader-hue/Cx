@@ -7,8 +7,8 @@ from streamlit_autorefresh import st_autorefresh
 # Page Layout Configuration (Premium Crypto Dark Theme)
 st.set_page_config(page_title="PRO Real-Time Gemini AI Crypto Bot", layout="wide", page_icon="🤖")
 
-# ⏳ AUTOMATIC PAGE REFRESH ENGINE (Updates everything every 15 seconds)
-st_autorefresh(interval=15 * 1000, key="crypto_bot_refresh")
+# ⏳ AI CORE REFRESH ENGINE (Updates Gemini Text Analysis every 30 seconds)
+st_autorefresh(interval=30 * 1000, key="crypto_bot_refresh")
 
 # 🔊 Custom HTML/JS Audio Player for Live Signal Sound
 def play_signal_sound():
@@ -47,20 +47,23 @@ def ask_gemini_ai(pair, price, change, timeframe):
     except Exception as e:
         return "⚠️ Gemini AI Live Node is synchronizing the orderbook blocks. Please wait... CONF_SCORE: 85%"
 
-# Fetching Live Market Data (Using safe browser-friendly API)
-@st.cache_data(ttl=10)
-def get_secure_crypto_data():
+# 🔥 BINANCE OFFICIAL API INTEGRATION
+@st.cache_data(ttl=5)
+def get_binance_live_data():
     try:
-        url = "https://api.coincap.io/v2/assets?limit=12"
+        target_symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'ADAUSDT', 'DOGEUSDT', 'DOTUSDT']
+        url = "https://api.binance.com/api/v3/ticker/24hr"
         res = requests.get(url).json()
-        data = res.get('data', [])
+        
         crypto_list = []
-        for coin in data:
-            crypto_list.append({
-                'Pair': f"{coin['symbol']}USDT",
-                'Price': float(coin['priceUsd']),
-                'Change': float(coin['changePercent24Hr'])
-            })
+        for ticker in res:
+            symbol = ticker['symbol']
+            if symbol in target_symbols:
+                crypto_list.append({
+                    'Pair': symbol,
+                    'Price': float(ticker['lastPrice']),
+                    'Change': float(ticker['priceChangePercent'])
+                })
         return pd.DataFrame(crypto_list)
     except:
         fallback = [
@@ -68,21 +71,21 @@ def get_secure_crypto_data():
             {'Pair': 'ETHUSDT', 'Price': 3650.25, 'Change': -1.12},
             {'Pair': 'SOLUSDT', 'Price': 178.90, 'Change': 6.15},
             {'Pair': 'BNBUSDT', 'Price': 592.40, 'Change': 0.85},
-            {'Pair': 'XRPUSDT', 'Price': 0.54, 'Change': -1.90}
+            {'Pair': 'XRPUSDT', 'Price': 1.36, 'Change': 2.10}
         ]
         return pd.DataFrame(fallback)
 
-# 🟢 LIVE STATUS BLINKING LED INDICATOR (Premium glowing effect)
+# 🟢 LIVE STATUS BLINKING LED INDICATOR
 st.markdown("""
     <style>
     .live-container { display: flex; align-items: center; background-color: #0d111a; padding: 10px 20px; border-radius: 30px; width: fit-content; border: 1px solid #1e293b; margin-bottom: 20px; box-shadow: 0 0 15px rgba(0, 255, 102, 0.1); }
     .blinking-dot { height: 14px; width: 14px; background-color: #00ff66; border-radius: 50%; display: inline-block; animation: blinker 1.5s linear infinite; box-shadow: 0 0 10px #00ff66, 0 0 20px #00ff66, 0 0 30px #00ff66; margin-right: 12px; }
     @keyframes blinker { 50% { opacity: 0; } }
-    .live-text { color: #00ff66; font-family: 'Montserrat', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .live-text { color: #00ff66; font-family: sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
     </style>
     <div class="live-container">
         <span class="blinking-dot"></span>
-        <span class="live-text">GEMINI CORE ENGINE: LIVE SYNC ACTIVE</span>
+        <span class="live-text">GEMINI CORE ENGINE: TICK-BY-TICK LIVE SYNC</span>
     </div>
 """, unsafe_allow_html=True)
 
@@ -94,13 +97,13 @@ left_col, right_col = st.columns([1, 3])
 
 with left_col:
     st.subheader("⚙️ Bot Engine Setup")
-    raw_data = get_secure_crypto_data()
+    raw_data = get_binance_live_data()
     asset_list = raw_data['Pair'].tolist() if not raw_data.empty else ["BTCUSDT"]
     selected_asset = st.selectbox("🔥 Target Trading Pair:", asset_list, index=0)
     selected_tf = st.selectbox("⏳ Candle Strategy Timeframe:", ["15m", "1h", "4h"], index=0)
     
     st.markdown("---")
-    st.success("🤖 **AI Core:** Google Gemini Live\n\n🎯 **Cycle Auto-Update:** 15 Seconds\n\n🔊 **Notification Audio:** Enabled")
+    st.success("🤖 **AI Core:** Google Gemini Live\n\n🎯 **Live Ticker:** Active\n\n🔊 **Notification Audio:** Enabled")
 
 # Render Advanced Interactive Chart
 st.markdown("---")
@@ -125,7 +128,7 @@ components.html(chart_html, height=490)
 
 st.markdown("---")
 
-# 🎯 REAL GOOGLE GEMINI AI TEXT ANALYSIS BOX
+# 🎯 REAL GOOGLE GEMINI AI TEXT ANALYSIS BOX (WITH ULTRA-LIVE JAVASCRIPT TICKER)
 st.subheader("🤖 Live AI Bot Analysis & Decision Box")
 
 if not raw_data.empty:
@@ -133,48 +136,34 @@ if not raw_data.empty:
     price = coin_data['Price']
     change = coin_data['Change']
     
-    # Mathematical Safety ATR Targets
-    atr_factor = price * 0.025
     if change > 0:
         signal_title = "🟢 BUY / LONG SIGNAL"
         signal_color = "#0cf251"
         glow_color = "rgba(12, 242, 81, 0.4)"
         inner_glow = "rgba(12, 242, 81, 0.1)"
-        tp = price + (atr_factor * 1.3)
-        sl = price - (atr_factor * 0.7)
+        direction = "up"
     else:
         signal_title = "🔴 SELL / SHORT SIGNAL"
         signal_color = "#ff3344"
         glow_color = "rgba(255, 51, 68, 0.4)"
         inner_glow = "rgba(255, 51, 68, 0.1)"
-        tp = price - (atr_factor * 1.3)
-        sl = price + (atr_factor * 0.7)
-
-    # Clean formatting
-    if price < 1:
-        txt_price = f"${price:,.4f}"
-        txt_tp = f"${tp:,.4f}"
-        txt_sl = f"${sl:,.4f}"
-    else:
-        txt_price = f"${price:,.2f}"
-        txt_tp = f"${tp:,.2f}"
-        txt_sl = f"${sl:,.2f}"
+        direction = "down"
 
     # Fetch Real-time Analysis from Google Gemini AI
     ai_raw = ask_gemini_ai(selected_asset, price, change, selected_tf)
     
     # Extract Confidence Score from Gemini Output text
-    confidence_score = "91%" # Default safety fallback
+    confidence_score = "91%" 
     clean_ai_msg = ai_raw
     if "CONF_SCORE:" in ai_raw:
         parts = ai_raw.split("CONF_SCORE:")
         clean_ai_msg = parts[0].strip()
         confidence_score = parts[1].strip().replace('"', '').replace('.', '')
 
-    # Trigger Audio Alert Notification (Plays sound on every auto-refresh)
+    # Trigger Audio Alert Notification
     play_signal_sound()
 
-    # Premium High-Graphics Glowing UI Box Rendering (Ultra-Futuristic Look)
+    # Premium High-Graphics Glowing UI Box Rendering with WebSockets for tick-by-tick live price updates
     box_html = f"""
     <div style="background-color:#0d111a; padding:30px; border-radius:15px; border: 2px solid {inner_glow}; box-shadow: 0 0 25px {inner_glow}, inset 0 0 15px rgba(0,0,0,0.5); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #ffffff; position: relative; overflow: hidden;">
         <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 15px; border: 2px solid {signal_color}; animation: border-glow 2s infinite alternate; pointer-events: none;"></div>
@@ -200,12 +189,52 @@ if not raw_data.empty:
                 <th style="padding-bottom: 12px; color: #a0aec0; font-weight: 600; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">🛑 Stop Loss Protection (SL)</th>
             </tr>
             <tr>
-                <td style="font-size:30px; font-weight:bold; color:#0cf251; letter-spacing: 1px; text-shadow: 0 0 15px #0cf251;">{txt_price}</td>
-                <td style="font-size:30px; font-weight:bold; color:#00bfff; letter-spacing: 1px; text-shadow: 0 0 15px #00bfff;">{txt_tp}</td>
-                <td style="font-size:30px; font-weight:bold; color:#ff3344; letter-spacing: 1px; text-shadow: 0 0 15px #ff3344;">{txt_sl}</td>
+                <td id="live-price" style="font-size:30px; font-weight:bold; color:#0cf251; letter-spacing: 1px; text-shadow: 0 0 15px #0cf251;">Loading...</td>
+                <td id="live-tp" style="font-size:30px; font-weight:bold; color:#00bfff; letter-spacing: 1px; text-shadow: 0 0 15px #00bfff;">Loading...</td>
+                <td id="live-sl" style="font-size:30px; font-weight:bold; color:#ff3344; letter-spacing: 1px; text-shadow: 0 0 15px #ff3344;">Loading...</td>
             </tr>
         </table>
     </div>
+
+    <script>
+    const symbol = "{selected_asset.lower()}";
+    const direction = "{direction}";
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/$${symbol}@ticker`);
+    
+    ws.onmessage = (event) => {{
+        const data = JSON.parse(event.data);
+        const price = parseFloat(data.c);
+        
+        // Smart decimal formatting
+        let formattedPrice;
+        if (price < 0.1) {{
+            formattedPrice = price.toFixed(6);
+        }} else if (price < 2) {{
+            formattedPrice = price.toFixed(4);
+        }} else {{
+            formattedPrice = price.toFixed(2);
+        }}
+        
+        // Live ATR Math Calculation inside JavaScript
+        const atrFactor = price * 0.025;
+        let tp, sl;
+        
+        if (direction === "up") {{
+            tp = price + (atrFactor * 1.3);
+            sl = price - (atrFactor * 0.7);
+        }} else {{
+            tp = price - (atrFactor * 1.3);
+            sl = price + (atrFactor * 0.7);
+        }}
+        
+        let formattedTp = price < 2 ? tp.toFixed(4) : tp.toFixed(2);
+        let formattedSl = price < 2 ? sl.toFixed(4) : sl.toFixed(2);
+        
+        document.getElementById("live-price").innerText = "$$" + formattedPrice;
+        document.getElementById("live-tp").innerText = "$$" + formattedTp;
+        document.getElementById("live-sl").innerText = "$$" + formattedSl;
+    }};
+    </script>
     """
     components.html(box_html, height=330)
-    
+        
