@@ -128,7 +128,7 @@ components.html(chart_html, height=490)
 
 st.markdown("---")
 
-# 🎯 REAL GOOGLE GEMINI AI TEXT ANALYSIS BOX (WITH FIXED JAVASCRIPT TICKER)
+# 🎯 REAL GOOGLE GEMINI AI TEXT ANALYSIS BOX (100% MOBILE RESPONSIVE DESIGN)
 st.subheader("🤖 Live AI Bot Analysis & Decision Box")
 
 if not raw_data.empty:
@@ -137,13 +137,13 @@ if not raw_data.empty:
     change = coin_data['Change']
     
     if change > 0:
-        signal_title = "🟢 BUY / LONG SIGNAL"
+        signal_title = "🟢 BUY / LONG"
         signal_color = "#0cf251"
         glow_color = "rgba(12, 242, 81, 0.4)"
         inner_glow = "rgba(12, 242, 81, 0.1)"
         direction = "up"
     else:
-        signal_title = "🔴 SELL / SHORT SIGNAL"
+        signal_title = "🔴 SELL / SHORT"
         signal_color = "#ff3344"
         glow_color = "rgba(255, 51, 68, 0.4)"
         inner_glow = "rgba(255, 51, 68, 0.1)"
@@ -163,37 +163,45 @@ if not raw_data.empty:
     # Trigger Audio Alert Notification
     play_signal_sound()
 
-    # Fixed Premium High-Graphics Box Layout (Safe Javascript variables wrapping)
+    # Premium Mobile-Responsive CSS Grid Injection
     box_html = f"""
-    <div style="background-color:#0d111a; padding:30px; border-radius:15px; border: 2px solid {inner_glow}; box-shadow: 0 0 25px {inner_glow}, inset 0 0 15px rgba(0,0,0,0.5); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #ffffff; position: relative; overflow: hidden;">
+    <div style="background-color:#0d111a; padding:20px; border-radius:15px; border: 2px solid {inner_glow}; box-shadow: 0 0 25px {inner_glow}; font-family: 'Segoe UI', sans-serif; color: #ffffff; position: relative; box-sizing: border-box;">
         <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 15px; border: 2px solid {signal_color}; animation: border-glow 2s infinite alternate; pointer-events: none;"></div>
         <style>
-        @keyframes border-glow {{ 0% {{ box-shadow: 0 0 10px {inner_glow}; }} 100% {{ box-shadow: 0 0 30px {glow_color}; }} }}
+        @keyframes border-glow {{ 0% {{ box-shadow: 0 0 10px {inner_glow}; }} 100% {{ box-shadow: 0 0 20px {glow_color}; }} }}
+        .grid-container {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }}
+        .grid-item {{ background: #141a29; padding: 15px; border-radius: 10px; border: 1px solid #222a3a; text-align: center; }}
+        .header-box {{ display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 15px; }}
         </style>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; z-index: 1;">
-            <h2 style="color:{signal_color}; margin:0px; font-size: 28px; font-weight: 800; letter-spacing: 0.5px; text-shadow: 0 0 15px {signal_color};">🎯 Current Signal: {signal_title}</h2>
-            <div style="background-color: #1a202e; border: 1px solid #3b4b75; padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 15px; color: #00bfff; box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);">
-                🧠 AI CONFIDENCE: <span style="color: #fff; font-size: 18px; margin-left: 5px; text-shadow: 0 0 10px #fff;">{confidence_score}</span>
+        <div class="header-box">
+            <h2 style="color:{signal_color}; margin:0px; font-size: 22px; font-weight: 800; text-shadow: 0 0 10px {signal_color};">🎯 Signal: {signal_title}</h2>
+            <div style="background-color: #1a202e; border: 1px solid #3b4b75; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 14px; color: #00bfff;">
+                🧠 AI CONFIDENCE: <span style="color: #fff; font-size: 16px; margin-left: 5px;">{confidence_score}</span>
             </div>
         </div>
-        <div style="font-size:17px; color:#ffffff; font-weight:500; background-color:#141a29; padding:20px; border-radius:10px; line-height:1.7; border: 1px solid #252f47; box-shadow: inset 0 2px 5px rgba(0,0,0,0.4); margin-bottom: 25px; position: relative; z-index: 1;">
-            <span style="color: #8fa3cc; font-size: 14px; display: block; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase;">🤖 GEMINI LIVE ANALYSIS:</span>
+        
+        <div style="font-size:15px; color:#ffffff; background-color:#141a29; padding:15px; border-radius:10px; line-height:1.6; border: 1px solid #252f47; margin-bottom: 15px; box-sizing: border-box;">
+            <span style="color: #8fa3cc; font-size: 12px; display: block; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px;">🤖 GEMINI LIVE ANALYSIS:</span>
             {clean_ai_msg}
         </div>
-        <hr style="border-color:#222a3a; margin: 25px 0; position: relative; z-index: 1;">
-        <table style="width:100%; font-size:16px; color:#ffffff; text-align:left; border-collapse: collapse; position: relative; z-index: 1;">
-            <tr>
-                <th style="padding-bottom: 12px; color: #a0aec0; font-weight: 600; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">🟢 Entry Zone / Price</th>
-                <th style="padding-bottom: 12px; color: #a0aec0; font-weight: 600; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">🚀 Take Profit Target (TP)</th>
-                <th style="padding-bottom: 12px; color: #a0aec0; font-weight: 600; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">🛑 Stop Loss Protection (SL)</th>
-            </tr>
-            <tr>
-                <td id="live-price" style="font-size:30px; font-weight:bold; color:#0cf251; letter-spacing: 1px; text-shadow: 0 0 15px #0cf251;">Connecting...</td>
-                <td id="live-tp" style="font-size:30px; font-weight:bold; color:#00bfff; letter-spacing: 1px; text-shadow: 0 0 15px #00bfff;">Calculating...</td>
-                <td id="live-sl" style="font-size:30px; font-weight:bold; color:#ff3344; letter-spacing: 1px; text-shadow: 0 0 15px #ff3344;">Calculating...</td>
-            </tr>
-        </table>
+        
+        <hr style="border-color:#222a3a; margin: 15px 0;">
+        
+        <div class="grid-container">
+            <div class="grid-item">
+                <div style="color: #a0aec0; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">🟢 Entry Price</div>
+                <div id="live-price" style="font-size:24px; font-weight:bold; color:#0cf251; text-shadow: 0 0 10px #0cf251;">Connecting...</div>
+            </div>
+            <div class="grid-item">
+                <div style="color: #a0aec0; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">🚀 Take Profit (TP)</div>
+                <div id="live-tp" style="font-size:24px; font-weight:bold; color:#00bfff; text-shadow: 0 0 10px #00bfff;">Calculating...</div>
+            </div>
+            <div class="grid-item">
+                <div style="color: #a0aec0; font-size: 12px; font-weight: 600; text-transform: uppercase; margin-bottom: 5px;">🛑 Stop Loss (SL)</div>
+                <div id="live-sl" style="font-size:24px; font-weight:bold; color:#ff3344; text-shadow: 0 0 10px #ff3344;">Calculating...</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -240,5 +248,5 @@ if not raw_data.empty:
     }})();
     </script>
     """
-    components.html(box_html, height=330)
+    components.html(box_html, height=450)
         
