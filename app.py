@@ -128,7 +128,7 @@ components.html(chart_html, height=490)
 
 st.markdown("---")
 
-# 🎯 REAL GOOGLE GEMINI AI TEXT ANALYSIS BOX (WITH ULTRA-LIVE JAVASCRIPT TICKER)
+# 🎯 REAL GOOGLE GEMINI AI TEXT ANALYSIS BOX (WITH FIXED JAVASCRIPT TICKER)
 st.subheader("🤖 Live AI Bot Analysis & Decision Box")
 
 if not raw_data.empty:
@@ -163,7 +163,7 @@ if not raw_data.empty:
     # Trigger Audio Alert Notification
     play_signal_sound()
 
-    # Premium High-Graphics Glowing UI Box Rendering with WebSockets for tick-by-tick live price updates
+    # Fixed Premium High-Graphics Box Layout (Safe Javascript variables wrapping)
     box_html = f"""
     <div style="background-color:#0d111a; padding:30px; border-radius:15px; border: 2px solid {inner_glow}; box-shadow: 0 0 25px {inner_glow}, inset 0 0 15px rgba(0,0,0,0.5); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #ffffff; position: relative; overflow: hidden;">
         <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 15px; border: 2px solid {signal_color}; animation: border-glow 2s infinite alternate; pointer-events: none;"></div>
@@ -189,51 +189,55 @@ if not raw_data.empty:
                 <th style="padding-bottom: 12px; color: #a0aec0; font-weight: 600; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">🛑 Stop Loss Protection (SL)</th>
             </tr>
             <tr>
-                <td id="live-price" style="font-size:30px; font-weight:bold; color:#0cf251; letter-spacing: 1px; text-shadow: 0 0 15px #0cf251;">Loading...</td>
-                <td id="live-tp" style="font-size:30px; font-weight:bold; color:#00bfff; letter-spacing: 1px; text-shadow: 0 0 15px #00bfff;">Loading...</td>
-                <td id="live-sl" style="font-size:30px; font-weight:bold; color:#ff3344; letter-spacing: 1px; text-shadow: 0 0 15px #ff3344;">Loading...</td>
+                <td id="live-price" style="font-size:30px; font-weight:bold; color:#0cf251; letter-spacing: 1px; text-shadow: 0 0 15px #0cf251;">Connecting...</td>
+                <td id="live-tp" style="font-size:30px; font-weight:bold; color:#00bfff; letter-spacing: 1px; text-shadow: 0 0 15px #00bfff;">Calculating...</td>
+                <td id="live-sl" style="font-size:30px; font-weight:bold; color:#ff3344; letter-spacing: 1px; text-shadow: 0 0 15px #ff3344;">Calculating...</td>
             </tr>
         </table>
     </div>
 
     <script>
-    const symbol = "{selected_asset.lower()}";
-    const direction = "{direction}";
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/$${symbol}@ticker`);
-    
-    ws.onmessage = (event) => {{
-        const data = JSON.parse(event.data);
-        const price = parseFloat(data.c);
+    (function() {{
+        const targetSymbol = "{selected_asset.lower()}";
+        const tradeDirection = "{direction}";
+        const wsUrl = "wss://stream.binance.com:9443/ws/" + targetSymbol + "@ticker";
+        const socket = new WebSocket(wsUrl);
         
-        // Smart decimal formatting
-        let formattedPrice;
-        if (price < 0.1) {{
-            formattedPrice = price.toFixed(6);
-        }} else if (price < 2) {{
-            formattedPrice = price.toFixed(4);
-        }} else {{
-            formattedPrice = price.toFixed(2);
-        }}
-        
-        // Live ATR Math Calculation inside JavaScript
-        const atrFactor = price * 0.025;
-        let tp, sl;
-        
-        if (direction === "up") {{
-            tp = price + (atrFactor * 1.3);
-            sl = price - (atrFactor * 0.7);
-        }} else {{
-            tp = price - (atrFactor * 1.3);
-            sl = price + (atrFactor * 0.7);
-        }}
-        
-        let formattedTp = price < 2 ? tp.toFixed(4) : tp.toFixed(2);
-        let formattedSl = price < 2 ? sl.toFixed(4) : sl.toFixed(2);
-        
-        document.getElementById("live-price").innerText = "$$" + formattedPrice;
-        document.getElementById("live-tp").innerText = "$$" + formattedTp;
-        document.getElementById("live-sl").innerText = "$$" + formattedSl;
-    }};
+        socket.onmessage = function(event) {{
+            const marketData = JSON.parse(event.data);
+            const livePrice = parseFloat(marketData.c);
+            
+            let displayPrice, displayTp, displaySl;
+            const atr = livePrice * 0.025;
+            let targetProfit, stopLoss;
+            
+            if (tradeDirection === "up") {{
+                targetProfit = livePrice + (atr * 1.3);
+                stopLoss = livePrice - (atr * 0.7);
+            }} else {{
+                targetProfit = livePrice - (atr * 1.3);
+                stopLoss = livePrice + (atr * 0.7);
+            }}
+            
+            if (livePrice < 0.1) {{
+                displayPrice = livePrice.toFixed(6);
+                displayTp = targetProfit.toFixed(6);
+                displaySl = stopLoss.toFixed(6);
+            }} else if (livePrice < 2) {{
+                displayPrice = livePrice.toFixed(4);
+                displayTp = targetProfit.toFixed(4);
+                displaySl = stopLoss.toFixed(4);
+            }} else {{
+                displayPrice = livePrice.toFixed(2);
+                displayTp = targetProfit.toFixed(2);
+                displaySl = stopLoss.toFixed(2);
+            }}
+            
+            document.getElementById("live-price").innerText = "$" + displayPrice;
+            document.getElementById("live-tp").innerText = "$" + displayTp;
+            document.getElementById("live-sl").innerText = "$" + displaySl;
+        }};
+    }})();
     </script>
     """
     components.html(box_html, height=330)
