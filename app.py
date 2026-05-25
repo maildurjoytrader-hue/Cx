@@ -26,7 +26,7 @@ with col1:
     # এআই সিগন্যাল লজিক
     if st.button("🚀 ANALYZE MARKET"):
         if not GEMINI_API_KEY:
-            st.error("API Key সেট করা নেই!")
+            st.error("AIzaSyAP6uvU1ubqILNkgxtT6sZmM05m8w5RaIA")
         else:
             with st.spinner("AI প্রসেসিং করছে..."):
                 prompt = "Analyze BTC market trend. Return short signal (BUY/SELL) and Confidence %."
