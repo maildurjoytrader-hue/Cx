@@ -1,43 +1,57 @@
 import streamlit as st
-import pandas as pd
+import streamlit.components.v1 as components
 import requests
+import os
 
-# আপনার API Key
-GEMINI_API_KEY = "AIzaSyDmrHoPXjfyIjt4gmMnYj4TIrn3KQ3GWOo"
+# API Key লোড করুন (রেন্ডার এনভায়রনমেন্ট থেকে)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
-def get_trend_signal(pair):
-    url = f"https://api.binance.com/api/v3/ticker/24hr?symbol={pair}"
-    try:
-        data = requests.get(url).json()
-        price = float(data['lastPrice'])
-        change = float(data['priceChangePercent'])
-        
-        # Advance AI Prompt for Future Trending
-        prompt = f"""
-        Act as a professional Crypto Future Trader. 
-        Token: {pair}, Current Price: {price}, 24h Change: {change}%.
-        Analyze the trend bias. If the trend is clearly bullish or bearish, output a signal.
-        If the market is choppy or uncertain, output "NO_TREND_WAIT".
-        
-        Format:
-        TREND: [BULLISH / BEARISH / NO_TREND_WAIT]
-        ENTRY: [Price to enter]
-        TP: [Take Profit Price]
-        SL: [Stop Loss Price]
-        LEVERAGE: [Suggested Leverage 5x-20x]
-        """
-        
-        ai_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
-        res = requests.post(ai_url, json={"contents": [{"parts": [{"text": prompt}]}]}).json()
-        return res['candidates'][0]['content']['parts'][0]['text']
-    except:
-        return "TREND: ERROR\nREASON: Data unavailable"
+st.set_page_config(page_title="AI Pro Trading", layout="wide")
 
-st.title("📈 Advanced Future Trend Analyzer")
-pair = st.selectbox("Select Pair", ["BTCUSDT", "ETHUSDT", "SOLUSDT", "BNBUSDT"])
+st.markdown("""
+<style>
+    .main { background-color: #0b0e14; }
+    .indicator-box { background-color: #161a21; padding: 20px; border-radius: 15px; border: 1px solid #333; color: white; }
+</style>
+""", unsafe_allow_html=True)
 
-if st.button("Analyze Trend"):
-    signal = get_trend_signal(pair)
-    st.markdown(f"### 🤖 AI Trend Report:\n```\n{signal}\n```")
-    st.warning("⚠️ ফিউচার ট্রেডিংয়ে ঝুঁকি অনেক বেশি। সর্বদা SL ব্যবহার করবেন।")
+st.title("🤖 AI-Powered Trading Dashboard")
+
+col1, col2 = st.columns([1, 3])
+
+with col1:
+    st.subheader("AI Analysis")
+    st.markdown('<div class="indicator-box">', unsafe_allow_html=True)
+    
+    # এআই সিগন্যাল লজিক
+    if st.button("🚀 ANALYZE MARKET"):
+        if not GEMINI_API_KEY:
+            st.error("API Key সেট করা নেই!")
+        else:
+            with st.spinner("AI প্রসেসিং করছে..."):
+                prompt = "Analyze BTC market trend. Return short signal (BUY/SELL) and Confidence %."
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+                response = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}).json()
+                result = response['candidates'][0]['content']['parts'][0]['text']
+                st.write(result)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with col2:
+    # ট্রেডিং ভিউ চার্ট
+    chart_html = """
+    <div class="tradingview-widget-container">
+      <div id="tradingview_chart"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+      <script type="text/javascript">
+      new TradingView.widget({
+      "width": "100%", "height": 500,
+      "symbol": "BINANCE:BTCUSDT",
+      "interval": "5", "theme": "dark",
+      "style": "1", "container_id": "tradingview_chart"
+    });
+    </script>
+    </div>
+    """
+    components.html(chart_html, height=520)
         
